@@ -220,7 +220,7 @@ def load_mobilenetv3_model(weights_path, num_classes=None):
 
 
 # Charge le modèle MobileNetV3-Large pré-entraîné en utilisant les poids locaux.
-local_weights = "./mobilenet_v3_large-8738ca79.pth"
+local_weights = "./models/mobilenet_v3_large-8738ca79.pth"
 test_model = load_mobilenetv3_model(local_weights)
 
 # Affiche la dernière couche du classifieur du modèle chargé
@@ -285,7 +285,7 @@ train_loader, val_loader, _, __ = create_data_loaders(train_dataset, val_dataset
 
 
 # Charge le modèle MobileNetV3-Large pré-entraîné et modifie sa dernière couche
-local_weights = "./mobilenet_v3_large-8738ca79.pth"
+local_weights = "./models/mobilenet_v3_large-8738ca79.pth"
 mobilenet_model = load_mobilenetv3_model(local_weights)
 mobilenet_model = update_model_last_layer(mobilenet_model, num_classes=2)
 

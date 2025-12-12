@@ -22,9 +22,9 @@ def training_loop_with_best_model(model, train_loader, val_loader, loss_fcn, opt
         L'objet modèle entraîné avec les poids qui ont atteint la meilleure précision de validation.
     """
     # Crée le répertoire pour sauvegarder le meilleur modèle s'il n'existe pas.
-    save_dir = "./"
+    save_dir = "./models"
     os.makedirs(save_dir, exist_ok=True)
-    best_model_path = os.path.join(save_dir, "best_model_nanobanana.pth")
+    best_model_path = os.path.join(save_dir, "best_model_nanobanana_pro.pth")
 
     # Déplace le modèle vers le périphérique de calcul spécifié.
     model.to(device)

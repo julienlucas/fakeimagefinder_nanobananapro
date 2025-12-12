@@ -18,7 +18,7 @@ def load_mobilenetv3_model(weights_path, num_classes=None):
     return model
 
 
-trained_model_path = "./best_model_nanobanana.pth"
+trained_model_path = "./models/best_model_nanobanana_pro.pth"
 model = load_mobilenetv3_model(trained_model_path, num_classes=2)
 model = model.to(DEVICE)
 model.eval()

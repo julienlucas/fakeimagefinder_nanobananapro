@@ -547,7 +547,7 @@ def exercise_4_1_fakefinder_transferlearning(learner_func):
             t.got = type(learner_func)
             return [t]
 
-        local_weights = "./mobilenet_v3_large-8738ca79.pth"
+        local_weights = "./models/mobilenet_v3_large-8738ca79.pth"
         learner_model = learner_func(local_weights)
 
         # Vérification du type de retour
@@ -614,7 +614,7 @@ def exercise_4_2_fakefinder_transferlearning(learner_func):
             return [t]
 
         initial_model = tv_models.mobilenet_v3_large(weights=None)
-        local_weights = "./mobilenet_v3_large-8738ca79.pth"
+        local_weights = "./models/mobilenet_v3_large-8738ca79.pth"
         state_dict = torch.load(local_weights, map_location=torch.device('cpu'))
         initial_model.load_state_dict(state_dict)
         learner_output = learner_func(initial_model, num_classes=8)

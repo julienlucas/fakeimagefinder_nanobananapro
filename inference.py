@@ -223,7 +223,7 @@ def predict_and_draw_gradcam_bbox(model, image_path, device, class_names=None, k
     return pred_label, conf, boxes[0]
 
 
-model_path = "./best_model_nanobanana.pth"
+model_path = "./models/best_model_nanobanana_pro.pth"
 image_path = './images/real/IMG_6396.jpg'
 
 trained_model = load_mobilenetv3_model(model_path, num_classes=2)

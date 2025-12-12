@@ -87,7 +87,7 @@ def load_mobilenetv3_model(weights_path, num_classes=None):
 
 
 # 1. Charge le modèle pré-entraîné
-trained_model_path = "./best_model.pth"
+trained_model_path = "./models/best_model_midjourney_dalle_sd.pth"
 trained_model = load_mobilenetv3_model(trained_model_path, num_classes=2)
 
 # 2. Gèle toutes les features, seul le classifier sera entraîné
@@ -127,5 +127,5 @@ continued_model, metrics = helper_utils.training_loop_with_best_model(
 helper_utils.plot_training_metrics(metrics)
 
 # 9. Sauvegarde les poids du modèle continué
-torch.save(continued_model.state_dict(), './best_model_nanobanana.pth')
-print("Modèle continué sauvegardé : best_model_nanobanana.pth")
+torch.save(continued_model.state_dict(), './models/best_model_nanobanana_pro.pth')
+print("Modèle continué sauvegardé : models/best_model_nanobanana_pro.pth")

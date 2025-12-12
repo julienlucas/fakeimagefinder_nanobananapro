@@ -36,11 +36,13 @@ fake_image_finder/
 │       ├── fake/              # 500 images
 │       └── real/
 ├── train.py                    # Entraînement initial
-├── finetune_nanobananapro.py  # Fine-tuning Nano Banana Pro
+├── train_finetune_nanobananapro.py  # Fine-tuning Nano Banana Pro
 ├── inference.py                # Inférence avec Grad-CAM
 ├── inference_check_fulldataset.py  # Évaluation complète du dataset
-├── best_model.pth              # Modèle initial (SD/Midjourney/DALL-E)
-├── best_model_nanobanana.pth   # Modèle fine-tuné Nano Banana Pro
+├── models/
+│   ├── best_model_midjourney_dalle_sd.pth # Modèle initial (SD/Midjourney/DALL-E)
+│   ├── best_model_nanobanana.pth   # Modèle fine-tuné Nano Banana Pro
+│   └── mobilenet_v3_large-8738ca79.pth  # Modèle pré-entraîné ImageNet
 └── utils/
     ├── training.py             # Boucle d'entraînement
     ├── helper_utils.py         # Utilitaires
@@ -64,15 +66,15 @@ uv sync
 python train.py
 ```
 
-Génère `best_model.pth` - modèle de base pour détecter les images fake générales.
+Génère `models/best_model_midjourney_dalle_sd.pth` - modèle de base pour détecter les images fake générales.
 
 #### 2. Fine-tuning pour Nano Banana Pro
 
 ```bash
-python finetune_nanobananapro.py
+python train_finetune_nanobananapro.py
 ```
 
-Génère `best_model_nanobanana.pth` - modèle adapté pour Nano Banana Pro.
+Génère `models/best_model_nanobanana_pro.pth` - modèle adapté pour Nano Banana Pro.
 
 **Configuration du fine-tuning :**
 - Learning rate : 0.0005
