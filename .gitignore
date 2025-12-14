@@ -10,5 +10,6 @@ __pycache__/
 **/.DS_Store
 **/.DS_Store?
 .DS_Store?
+uv.lock
 /AIvsReal_nanobanana_pro/
 /AIvsReal_midjourney_dalle_sd/
