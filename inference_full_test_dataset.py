@@ -35,7 +35,7 @@ val_transform = transforms.Compose([
 REAL_THRESHOLD = 0.7
 FAKE_THRESHOLD = 0.7
 
-base_dir = "./AIvsReal_midjourney_dalle_sd/test"
+base_dir = "./AIvsReal_nanobanana_pro/test"
 real_dir = os.path.join(base_dir, "real")
 fake_dir = os.path.join(base_dir, "fake")
 

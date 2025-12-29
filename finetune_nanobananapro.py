@@ -4,7 +4,7 @@ import torch.optim as optim
 import torchvision.models as tv_models
 import torchvision.transforms as transforms
 import torchvision.utils as vutils
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, ConcatDataset
 from torchvision.datasets import ImageFolder
 
 import utils.helper_utils as helper_utils
@@ -25,7 +25,7 @@ dataset_path = "./AIvsReal_nanobanana_pro"
 
 
 # Sélectionne aléatoirement et affiche une grille d'images d'échantillons depuis le dossier 'train'.
-helper_utils.display_train_images(dataset_path)
+# helper_utils.display_train_images(dataset_path)
 
 def define_transformations(mean=IMAGENET_MEAN, std=IMAGENET_STD):
     """
@@ -83,7 +83,7 @@ def create_data_loaders(trainset, valset, batch_size):
 
 temp_train, temp_val = create_dataset_splits(dataset_path)
 dataloaders = create_data_loaders(temp_train, temp_val, batch_size=16)
-helper_utils.display_images_from_dataloader(dataloaders[0])
+# helper_utils.display_images_from_dataloader(dataloaders[0])
 
 
 def load_mobilenetv3_model(weights_path, num_classes=None):
@@ -115,35 +115,49 @@ trained_model = trained_model.to(DEVICE)
 
 print("Modèle chargé et gelé, sauf le classifier qui sera entraîné")
 
-# 3. Prépare le nouveau dataset
-new_dataset_path = "./AIvsReal_nanobanana_pro"
-new_train_dataset, new_val_dataset = create_dataset_splits(new_dataset_path)
-new_train_loader, new_val_loader, _, __ = create_data_loaders(
-    new_train_dataset, new_val_dataset,
-    batch_size=32
-)
+# 3. Prépare les deux datasets
+midjourney_path = "./AIvsReal_midjourney_dalle_sd"
+nanobanana_path = "./AIvsReal_nanobanana_pro"
+
+midjourney_train, midjourney_val = create_dataset_splits(midjourney_path)
+nanobanana_train, nanobanana_val = create_dataset_splits(nanobanana_path)
+
+# Applique les transformations avant de combiner
+train_transform, val_transform = define_transformations()
+midjourney_train.transform = train_transform
+midjourney_val.transform = val_transform
+nanobanana_train.transform = train_transform
+nanobanana_val.transform = val_transform
+
+# Combine les datasets
+combined_train = ConcatDataset([midjourney_train, nanobanana_train])
+combined_val = ConcatDataset([midjourney_val, nanobanana_val])
+
+# Crée les DataLoaders
+new_train_loader = DataLoader(combined_train, batch_size=32, shuffle=True)
+new_val_loader = DataLoader(combined_val, batch_size=32, shuffle=False)
 
 # 4. Définit la fonction de perte
 loss_fcn = nn.CrossEntropyLoss()
 
 # 5. Configure l'optimiseur (uniquement le classifier)
-optimizer = optim.Adam(trained_model.classifier.parameters(), lr=0.0001)
+optimizer = optim.Adam(trained_model.classifier.parameters(), lr=0.0005)
 
 # 6. Entraîne le modèle
-# continued_model, metrics = helper_utils.training_loop_with_best_model(
-#     trained_model,
-#     new_train_loader,
-#     new_val_loader,
-#     loss_fcn,
-#     optimizer,
-#     DEVICE,
-#     num_epochs=1,
-#     model_name="best_model_nanobanana_pro.pth"
-# )
+continued_model, metrics = helper_utils.training_loop_with_best_model(
+    trained_model,
+    new_train_loader,
+    new_val_loader,
+    loss_fcn,
+    optimizer,
+    DEVICE,
+    num_epochs=5,
+    model_name="best_model_nanobanana_pro.pth"
+)
 
 # 7. Trace les courbes de perte et précision
 helper_utils.plot_training_metrics(metrics)
 
 # 8. Sauvegarde les poids du modèle continué
-# torch.save(continued_model.state_dict(), './models/best_model_nanobanana_pro.pth')
-# print("Modèle continué sauvegardé : models/best_model_nanobanana_pro.pth")
+torch.save(continued_model.state_dict(), './models/best_model_nanobanana_pro.pth')
+print("Modèle continué sauvegardé : models/best_model_nanobanana_pro.pth")

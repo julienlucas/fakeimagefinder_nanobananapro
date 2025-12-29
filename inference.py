@@ -6,6 +6,8 @@ import torch.nn as nn
 import torchvision.models as tv_models
 import torchvision.transforms as transforms
 import torchvision.utils as vutils
+import argparse
+import os
 
 import utils.helper_utils as helper_utils
 
@@ -225,11 +227,34 @@ def predict_and_draw_gradcam_bbox(model, image_path, device, class_names=None, k
     return pred_label, conf, boxes[0]
 
 
-model_path = "./models/best_model_nanobanana_pro.pth"
-image_path = './images/real/GQ0924_TOC_05.jpg.webp.jpeg'
+def main():
+    parser = argparse.ArgumentParser(description="Prédit si une image est fake ou real")
+    parser.add_argument("image_name", help="Nom de l'image dans le répertoire images/")
+    args = parser.parse_args()
 
-trained_model = load_mobilenetv3_model(model_path, num_classes=2)
-trained_model = trained_model.to(DEVICE)
-trained_model.eval()
+    model_path = "./models/best_model_nanobanana_pro.pth"
 
-predict_and_draw_gradcam_bbox(trained_model, image_path, DEVICE)
+    image_paths = [
+        f"./images/{args.image_name}",
+        f"./images/fake/{args.image_name}",
+        f"./images/real/{args.image_name}",
+    ]
+
+    image_path = None
+    for path in image_paths:
+        if os.path.exists(path):
+            image_path = path
+            break
+
+    if image_path is None:
+        raise FileNotFoundError(f"Image '{args.image_name}' introuvable dans images/")
+
+    trained_model = load_mobilenetv3_model(model_path, num_classes=2)
+    trained_model = trained_model.to(DEVICE)
+    trained_model.eval()
+
+    predict_and_draw_gradcam_bbox(trained_model, image_path, DEVICE)
+
+
+if __name__ == "__main__":
+    main()

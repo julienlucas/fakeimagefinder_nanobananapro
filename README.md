@@ -2,34 +2,39 @@
 
 Détecteur d'images générées par IA utilisant **MobileNetV3 Large** finetuné avec des images Nano Banana Pro pour identifier les fakes.
 
-**Précision : 90% (9 images sur 10)**
+**Précision : (9 images sur 10)**
 (Fonctionne aussi sur images difussion - Midjourney, SD, DALL-E)
 
 *Note : les datasets d'images d'entrainement sont à télécharger sur HuggingFace 👇*
 
 ![Fakefinder](./images/fake-1.png)
 
+## 🔍 Installation et tester des images
+
+```bash
+# Installation de uv (si pas déjà installé)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Installation des packages
+uv sync
+
+# Inférence simple avec Grad-CAM
+uv run inference.py nom_image.jpg
+
+# L'image doit être dans le répertoire images/ (images/, images/fake/ ou images/real/)
+
+# Évaluation complète du dataset de test
+uv run python inference_check_test_dataset.py
+```
+
 ## 🎯 Concept Principal : Finetuning par Transfer Learning
 
-Ce projet utilise la technique du **transfer learning** en changeant seulement la dernière couche - la couche classfieur**--:
+Ce projet repose entièrement sur la technique du **transfer learning** :
 
-1. **ImageNet → Fake général** : Fine-tuning sur SD/Midjourney/DALL-E
-2. **Fake général → Nano Banana Pro** : Fine-tuning spécifique sur Nano Banana Pro
-
-## 🔄 Transfer Learning
-
-Ce projet repose entièrement sur une stratégie de **transfer learning** en cascade :
-
-### Étape 1 : Transfer Learning vers la détection fake/real
 - **Source** : Modèle ImageNet v3 Large (`mobilenet_v3_large-8738ca79.pth - même version que dans le doc PyTorch`)
-- **Cible** : Détection générale d'images fake (SD, Midjourney, DALL-E)
-- **Méthode** : Fine-tuning du classifier (features extractor gelé)
-- **Résultat** : `best_model_midjourney_dalle_sd.pth`
-
-### Étape 2 : Transfer Learning vers Nano Banana Pro
-- **Source** : Modèle fine-tuné SD/Midjourney/DALL-E
-- **Cible** : Détection spécifique Nano Banana Pro
-- **Méthode** : Fine-tuning du classifier avec learning rate réduit (0.0005)
+- **Cible** : Détection générale d'images fake (SD, Midjourney, DALL-E et Nano Banana pro)
+- **Méthode** : Fine-tuning du classifier uniquement (reste du modèle gélé)
+- **Datasets d'entraînement** : Combinaison des datasets Midjourney/DALL-E/SD et Nano Banana Pro
 - **Résultat** : `best_model_nanobanana_pro.pth`
 
 **Avantages du transfer learning** :
@@ -41,8 +46,6 @@ Ce projet repose entièrement sur une stratégie de **transfer learning** en cas
 ## 🏗️ Architecture
 
 - **Modèle de base** : MobileNetV3-Large (transfer learning depuis ImageNet)
-- **Fine-tuning par Transfer learning** : Cascade en 3 étapes (ImageNet → Fake général midjourney/dall-e/SD → Puis Nano Banana Pro)
-- **Fine-tuning** : couche classifier uniquement (features extractor gelé)
 - **Classes** : 2 (Real / Fake)
 
 ## 🚀 Installation
@@ -68,46 +71,36 @@ Collectées depuis :
 
 ## 🎓 Entraînement (Transfer Learning)
 
-### 1. Fine-tuning initial (SD/Midjourney/DALL-E)
+### 1. Fine-tuning SD/Midjourney/DALL-E uniquement
 
 ```bash
-uv run python finetune_midjourney_dalle_sd.py
+uv run finetune_midjourney_dalle_sd.py
 ```
 
 Génère `models/best_model_midjourney_dalle_sd.pth`
 
-### 2. Puis fine-tuning Nano Banana Pro
+### 2. Re-finetuning avec SD/Midjourney/DALL-E + Nano Banana Pro
 
 ```bash
-uv run python finetune_nanobananapro.py
+uv run finetune_nanobananapro.py
 ```
 
 Génère `models/best_model_nanobanana_pro.pth`
 
 ![Evals Header](./images/dataset.png)
 
-## 🔍 Inférence
-
-```bash
-# Inférence simple avec Grad-CAM
-uv run python inference.py
-
-# Évaluation complète du dataset de test
-uv run python inference_check_test_dataset.py
-```
-
 ## 📊 Résultats
 
-| Dataset | Modèle | Accuracy |
-|---------|--------|----------|
-| Midjourney/DALL-E/SD | `best_model_midjourney_dalle_sd.pth` | 83.40% |
-| Nano Banana Pro (après fine-tuning) | `best_model_nanobanana_pro.pth` | 87.10% |
+| Dataset | Accuracy |
+|---------|----------|
+| Midjourney/DALL-E/SD | 88,50%
+| Nano Banana Pro | 87,40%
 
 
 ![Evals Header](./images/evals.png)
 
 ## 📄 Licence
 
-Ce projet est destiné à l'éducation sur l'IA sur Youtube: https://www.youtube.com/@julienlucas
+Ce projet est destiné à l'éducation, vidéo complète sur Youtube: https://www.youtube.com/@julienlucas
 
-Mettez une ⭐ pour soutenir mon travail 🙏
+Mettez une ⭐ pour soutenir mon travail, c'est apprécié 🙏
