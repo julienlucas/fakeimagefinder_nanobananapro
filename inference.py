@@ -38,7 +38,12 @@ def load_mobilenetv3_model(weights_path, num_classes=None):
     # Charge le dictionnaire d'état (poids) depuis le fichier local.
     state_dict = torch.load(weights_path, map_location=torch.device('cpu'))
 
-    model.load_state_dict(state_dict)
+    # Filtrer uniquement les clés qui correspondent en nom et en forme
+    model_state = model.state_dict()
+    filtered_dict = {k: v for k, v in state_dict.items()
+                     if k in model_state and model_state[k].shape == v.shape}
+
+    model.load_state_dict(filtered_dict, strict=False)
 
     return model
 

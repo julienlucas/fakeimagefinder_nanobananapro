@@ -93,8 +93,7 @@ Génère `models/best_model_nanobanana_pro.pth`
 
 | Dataset | Accuracy |
 |---------|----------|
-| Midjourney/DALL-E/SD | 88,50%
-| Nano Banana Pro | 87,40%
+| Midjourney/DALL-E/SD/Nano Banana Pro | 85%
 
 
 ![Evals Header](./images/evals.png)
